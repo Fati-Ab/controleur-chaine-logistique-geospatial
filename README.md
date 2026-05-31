@@ -49,6 +49,8 @@ Le projet répond aux questions suivantes :
 - psycopg2
 - Docker / Docker Compose
 - Kepler.gl
+- GeoServer
+- OpenRouteService (Isochrones)
 
 ---
 
@@ -99,6 +101,8 @@ Kafka Consumer
 Table realtime_positions
         ↓
 Dashboard Streamlit
+        ↓
+GeoServer (WMS/WFS)
 ```
 
 Architecture analytique :
@@ -185,6 +189,8 @@ projet_BI/
 ├── requirements.txt
 ├── README.md
 └── COMMANDES_UTILES.md
+|__run_realtime.bat
+|__run_analytics_loop.bat
 ```
 
 ---
@@ -484,6 +490,36 @@ Vérifie la génération des fichiers GeoJSON.
 
 ---
 
+## Publication GeoServer
+
+GeoServer est connecté directement à PostGIS.
+
+Les couches publiées sont :
+
+- gps_positions
+- realtime_positions
+- dbscan_clusters
+
+Services disponibles :
+
+- WMS
+- WFS
+
+Exemple WFS :
+
+http://localhost:8080/geoserver/logistics/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=logistics:gps_positions&outputFormat=application/json
+
+##  Isochrones
+
+Le dashboard intègre une visualisation d’isochrones permettant
+de représenter les zones accessibles autour d’un point logistique.
+
+Les isochrones sont utilisées pour :
+
+- l'analyse d'accessibilité ;
+- l'optimisation des tournées ;
+- l'aide à la décision logistique.
+
 ## 10. Résultats principaux
 
 ```text
@@ -501,19 +537,20 @@ Temps gagné : 1172.86 minutes
 
 ## 11. Conclusion
 
-Ce projet démontre la mise en place d’un système complet de supervision logistique intelligente.
+Le projet met en œuvre une chaîne complète de géospatial analytics :
 
-Il combine :
+- GPS réels (Porto Taxi Dataset)
+- Kafka Streaming
+- PostgreSQL / PostGIS
+- Dashboard Streamlit temps réel
+- GeoServer
+- DBSCAN
+- Open-Meteo
+- Score de risque
+- Prévisions Prophet
+- Optimisation des tournées
+- Heatmaps
+- Isochrones
+- Export Kepler.gl
 
-- données GPS réelles ;
-- streaming Kafka ;
-- stockage géospatial PostGIS ;
-- clustering DBSCAN ;
-- météo Open-Meteo ;
-- scoring de risque ;
-- prévision des retards ;
-- optimisation des tournées ;
-- visualisation dashboard ;
-- export Kepler.gl.
-
-Le système final peut être utilisé comme outil d’aide à la décision pour un responsable logistique.
+Le système constitue une véritable tour de contrôle logistique temps réel.
