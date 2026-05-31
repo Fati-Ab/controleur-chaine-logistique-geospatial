@@ -1,391 +1,154 @@
-# Commandes utiles — Projet logistique géospatial
+Commandes utiles — Projet logistique géospatial
 
-## 1. Aller dans le projet
+Aller dans le projetcd C:\Users\Fati\projet_BI
 
-```bash
-cd C:\Users\Fati\projet_BI
-```
+Activer l’environnement Pythonvenv\Scripts\activate
 
----
+Lancer Dockerdocker compose up -d
 
-## 2. Activer l’environnement Python
+Vérifier les conteneurs Dockerdocker psConteneurs attendus :
 
-```bash
-venv\Scripts\activate
-```
+logistics_postgislogistics_kafkalogistics_zookeeper5. Arrêter Dockerdocker compose down6. Tester la connexion PostGISpython src\test_connection.pyRésultat attendu :
 
----
+Connexion PostgreSQL/PostGIS OK7. Préparer les données GPSpython src\01_prepare_porto_data.py8. Vérifier les données GPSpython src\check_gps_data.pyRésultat attendu :
 
-## 3. Lancer Docker
+Nombre de trajets : 4997Nombre de positions GPS : 124925Nombre de taxis différents : 3049. Vider la table temps réelÀ utiliser avant de relancer une nouvelle simulation Kafka :
 
-```bash
+docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "TRUNCATE TABLE realtime_positions RESTART IDENTITY;"10. Lancer Kafka ConsumerTerminal 1 :
+
+cd C:\Users\Fati\projet_BIvenv\Scripts\activatepython -m src.ingestion.03_kafka_consumer_postgis11. Lancer Kafka ProducerTerminal 2 :
+
+cd C:\Users\Fati\projet_BIvenv\Scripts\activatepython -m src.ingestion.02_kafka_producer12. Vérifier le nombre de taxis en temps réeldocker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT(DISTINCT truck_id) FROM realtime_positions;"Résultat attendu progressivement :
+
+153045...30413. Voir les derniers véhicules insérésdocker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT truck_id, status, event_time FROM realtime_positions ORDER BY event_time DESC LIMIT 10;"14. Lancer DBSCANpython -m src.analysis.05_dbscan_clustering15. Vérifier DBSCANpython -m src.analysis.check_dbscan16. Lancer météo Open-Meteopython -m src.enrichment.08_weather_openmeteo17. Vérifier météopython -m src.enrichment.check_weather18. Calculer le score de risquepython -m src.analysis.06_risk_scoring19. Prévoir les retardspython -m src.analysis.09_prophet_forecast20. Vérifier les prévisionspython -m src.analysis.check_forecast21. Optimiser les tournéespython -m src.analysis.10_route_optimization22. Vérifier l’optimisationpython -m src.analysis.check_optimization23. Exporter vers Kepler.glpython -m src.export.07_export_kepler24. Vérifier les exportsdir data\exportsFichiers attendus :
+
+kepler_points.geojsondbscan_clusters.geojsonrisk_routes.geojsonoptimization_report.json25. Lancer le dashboardTerminal 3 :
+
+cd C:\Users\Fati\projet_BIvenv\Scripts\activatestreamlit run dashboard\app.py26. Pipeline complet dans l’ordrecd C:\Users\Fati\projet_BIvenv\Scripts\activate
+
 docker compose up -d
-```
 
----
+python src\01_prepare_porto_data.pypython -m src.analysis.05_dbscan_clusteringpython -m src.enrichment.08_weather_openmeteopython -m src.analysis.06_risk_scoringpython -m src.analysis.09_prophet_forecastpython -m src.analysis.10_route_optimizationpython -m src.export.07_export_kepler
 
-## 4. Vérifier les conteneurs Docker
+streamlit run dashboard\app.py27. Lancer la simulation temps réel complèteTerminal 1 — Consumer :
 
-```bash
-docker ps
-```
+cd C:\Users\Fati\projet_BIvenv\Scripts\activatepython -m src.ingestion.03_kafka_consumer_postgisTerminal 2 — Producer :
 
-Conteneurs attendus :
+cd C:\Users\Fati\projet_BIvenv\Scripts\activatepython -m src.ingestion.02_kafka_producerTerminal 3 — Dashboard :
 
-```text
-logistics_postgis
-logistics_kafka
-logistics_zookeeper
-```
+cd C:\Users\Fati\projet_BIvenv\Scripts\activatestreamlit run dashboard\app.py28. Ouvrir Kepler.glAller sur :
 
----
+https://kepler.gl/demoImporter :
 
-## 5. Arrêter Docker
+data/exports/kepler_points.geojsondata/exports/dbscan_clusters.geojsondata/exports/risk_routes.geojson29. Nettoyer le cache pip si manque d’espacepip cache purge30. Supprimer un conteneur bloquédocker stop logistics_postgisdocker rm logistics_postgisPuis relancer :
 
-```bash
-docker compose down
-```
+docker compose up -d31. Vérifier les tables principalesdocker exec -i logistics_postgis psql -U postgres -d logistics_db -c "\dt"32. Compter les lignes des tables principalesdocker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT() FROM trips;"docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT() FROM gps_positions;"docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT() FROM realtime_positions;"docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT() FROM dbscan_clusters;"docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT() FROM weather_hourly;"docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT() FROM route_scores;"docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT() FROM forecast_delays;"docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT() FROM optimized_routes;"33. Résumé rapide pour la démonstrationdocker compose up -d
 
----
+python -m src.analysis.05_dbscan_clusteringpython -m src.enrichment.08_weather_openmeteopython -m src.analysis.06_risk_scoringpython -m src.analysis.09_prophet_forecastpython -m src.analysis.10_route_optimizationpython -m src.export.07_export_kepler
 
-## 6. Tester la connexion PostGIS
+streamlit run dashboard\app.pyPuis lancer en parallèle :
 
-```bash
-python src\test_connection.py
-```
+python -m src.ingestion.03_kafka_consumer_postgispython -m src.ingestion.02_kafka_producer
+
+34. Lancer GeoServer
+
+Vérifier que GeoServer est démarré :
+
+http://localhost:8080/geoserver
+
+Identifiants :
+
+admin
+geoserver
+
+Couches publiées :
+
+* gps_positions
+* realtime_positions
+* dbscan_clusters
+
+35. Tester le service WFS
+
+Ouvrir :
+
+http://localhost:8080/geoserver/logistics/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=logistics:gps_positions&maxFeatures=10&outputFormat=application/json
 
 Résultat attendu :
 
-```text
-Connexion PostgreSQL/PostGIS OK
-```
+GeoJSON contenant les positions GPS.
 
----
+36. Lancer le script automatique temps réel
 
-## 7. Préparer les données GPS
+Double-cliquer :
 
-```bash
-python src\01_prepare_porto_data.py
-```
+run_realtime.bat
 
----
+Le script :
 
-## 8. Vérifier les données GPS
+* démarre Docker ;
+* vide realtime_positions ;
+* lance le Consumer Kafka ;
+* lance le Producer Kafka ;
+* lance Streamlit.
 
-```bash
-python src\check_gps_data.py
-```
+37. Lancer le recalcul automatique des analyses
 
-Résultat attendu :
+Double-cliquer :
 
-```text
-Nombre de trajets : 4997
-Nombre de positions GPS : 124925
-Nombre de taxis différents : 304
-```
+run_analytics_loop.bat
 
----
+Le script recalcule automatiquement :
 
-## 9. Vider la table temps réel
+* DBSCAN ;
+* Score de risque ;
+* Prévisions ;
+* Optimisation.
 
-À utiliser avant de relancer une nouvelle simulation Kafka :
+38. Vérifier le dashboard final
 
-```bash
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "TRUNCATE TABLE realtime_positions RESTART IDENTITY;"
-```
+Pages disponibles :
 
----
+* 🏠 Vue globale
+* 📡 Temps réel
+* 🚨 Alertes temps réel
+* 🗺️ Tournées
+* 🔵 Clusters DBSCAN
+* 🔥 Heatmap
+* ⚠️ Score de risque
+* 📊 Prévisions
+* 🌧️ Météo Open-Meteo
+* 🌍 GeoServer
+* 🕒 Isochrones
+* 🌐 Export Kepler.gl
 
-## 10. Lancer Kafka Consumer
+39. Démonstration recommandée
 
-Terminal 1 :
+Étape 1 :
+run_realtime.bat
 
-```bash
-cd C:\Users\Fati\projet_BI
-venv\Scripts\activate
-python -m src.ingestion.03_kafka_consumer_postgis
-```
+Étape 2 :
+run_analytics_loop.bat
 
----
+Étape 3 :
+Montrer la montée progressive des taxis :
 
-## 11. Lancer Kafka Producer
+0 → 15 → 30 → 45 → ... → 304
 
-Terminal 2 :
+Étape 4 :
+Afficher :
 
-```bash
-cd C:\Users\Fati\projet_BI
-venv\Scripts\activate
-python -m src.ingestion.02_kafka_producer
-```
+* Heatmap
+* DBSCAN
+* Risques
+* Prévisions
+* GeoServer
+* Isochrones
 
----
+Étape 5 :
+Montrer l’export Kepler.gl.
 
-## 12. Vérifier le nombre de taxis en temps réel
+40. Push GitHub
 
-```bash
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT(DISTINCT truck_id) FROM realtime_positions;"
-```
-
-Résultat attendu progressivement :
-
-```text
-15
-30
-45
-...
-304
-```
-
----
-
-## 13. Voir les derniers véhicules insérés
-
-```bash
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT truck_id, status, event_time FROM realtime_positions ORDER BY event_time DESC LIMIT 10;"
-```
-
----
-
-## 14. Lancer DBSCAN
-
-```bash
-python -m src.analysis.05_dbscan_clustering
-```
-
----
-
-## 15. Vérifier DBSCAN
-
-```bash
-python -m src.analysis.check_dbscan
-```
-
----
-
-## 16. Lancer météo Open-Meteo
-
-```bash
-python -m src.enrichment.08_weather_openmeteo
-```
-
----
-
-## 17. Vérifier météo
-
-```bash
-python -m src.enrichment.check_weather
-```
-
----
-
-## 18. Calculer le score de risque
-
-```bash
-python -m src.analysis.06_risk_scoring
-```
-
----
-
-## 19. Prévoir les retards
-
-```bash
-python -m src.analysis.09_prophet_forecast
-```
-
----
-
-## 20. Vérifier les prévisions
-
-```bash
-python -m src.analysis.check_forecast
-```
-
----
-
-## 21. Optimiser les tournées
-
-```bash
-python -m src.analysis.10_route_optimization
-```
-
----
-
-## 22. Vérifier l’optimisation
-
-```bash
-python -m src.analysis.check_optimization
-```
-
----
-
-## 23. Exporter vers Kepler.gl
-
-```bash
-python -m src.export.07_export_kepler
-```
-
----
-
-## 24. Vérifier les exports
-
-```bash
-dir data\exports
-```
-
-Fichiers attendus :
-
-```text
-kepler_points.geojson
-dbscan_clusters.geojson
-risk_routes.geojson
-optimization_report.json
-```
-
----
-
-## 25. Lancer le dashboard
-
-Terminal 3 :
-
-```bash
-cd C:\Users\Fati\projet_BI
-venv\Scripts\activate
-streamlit run dashboard\app.py
-```
-
----
-
-## 26. Pipeline complet dans l’ordre
-
-```bash
-cd C:\Users\Fati\projet_BI
-venv\Scripts\activate
-
-docker compose up -d
-
-python src\01_prepare_porto_data.py
-python -m src.analysis.05_dbscan_clustering
-python -m src.enrichment.08_weather_openmeteo
-python -m src.analysis.06_risk_scoring
-python -m src.analysis.09_prophet_forecast
-python -m src.analysis.10_route_optimization
-python -m src.export.07_export_kepler
-
-streamlit run dashboard\app.py
-```
-
----
-
-## 27. Lancer la simulation temps réel complète
-
-Terminal 1 — Consumer :
-
-```bash
-cd C:\Users\Fati\projet_BI
-venv\Scripts\activate
-python -m src.ingestion.03_kafka_consumer_postgis
-```
-
-Terminal 2 — Producer :
-
-```bash
-cd C:\Users\Fati\projet_BI
-venv\Scripts\activate
-python -m src.ingestion.02_kafka_producer
-```
-
-Terminal 3 — Dashboard :
-
-```bash
-cd C:\Users\Fati\projet_BI
-venv\Scripts\activate
-streamlit run dashboard\app.py
-```
-
----
-
-## 28. Ouvrir Kepler.gl
-
-Aller sur :
-
-```text
-https://kepler.gl/demo
-```
-
-Importer :
-
-```text
-data/exports/kepler_points.geojson
-data/exports/dbscan_clusters.geojson
-data/exports/risk_routes.geojson
-```
-
----
-
-## 29. Nettoyer le cache pip si manque d’espace
-
-```bash
-pip cache purge
-```
-
----
-
-## 30. Supprimer un conteneur bloqué
-
-```bash
-docker stop logistics_postgis
-docker rm logistics_postgis
-```
-
-Puis relancer :
-
-```bash
-docker compose up -d
-```
-
----
-
-## 31. Vérifier les tables principales
-
-```bash
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "\dt"
-```
-
----
-
-## 32. Compter les lignes des tables principales
-
-```bash
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT(*) FROM trips;"
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT(*) FROM gps_positions;"
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT(*) FROM realtime_positions;"
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT(*) FROM dbscan_clusters;"
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT(*) FROM weather_hourly;"
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT(*) FROM route_scores;"
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT(*) FROM forecast_delays;"
-docker exec -i logistics_postgis psql -U postgres -d logistics_db -c "SELECT COUNT(*) FROM optimized_routes;"
-```
-
----
-
-## 33. Résumé rapide pour la démonstration
-
-```bash
-docker compose up -d
-
-python -m src.analysis.05_dbscan_clustering
-python -m src.enrichment.08_weather_openmeteo
-python -m src.analysis.06_risk_scoring
-python -m src.analysis.09_prophet_forecast
-python -m src.analysis.10_route_optimization
-python -m src.export.07_export_kepler
-
-streamlit run dashboard\app.py
-```
-
-Puis lancer en parallèle :
-
-```bash
-python -m src.ingestion.03_kafka_consumer_postgis
-python -m src.ingestion.02_kafka_producer
-```
+git add .
+git commit -m "Version finale temps réel avec GeoServer, Heatmap et Alertes"
+git push
