@@ -1,0 +1,14 @@
+{
+  "summary": {
+    "total_routes": 4997,
+    "distance_before_km": 18763.02,
+    "distance_after_km": 18015.94,
+    "savings_km": 747.08,
+    "savings_percent": 3.98,
+    "delay_before_min": 10277.08,
+    "delay_after_min": 9104.22,
+    "delay_saved_min": 1172.86,
+    "savings_cost_eur": 1183.92,
+    "estimated_monthly_savings_eur": 26046.24
+  }
+}

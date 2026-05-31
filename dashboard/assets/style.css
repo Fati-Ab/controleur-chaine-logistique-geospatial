@@ -1,0 +1,290 @@
+/* ============================================================
+   STYLE GLOBAL — DASHBOARD LOGISTIQUE
+   ============================================================ */
+
+.stApp {
+    background: linear-gradient(135deg, #f4f7fb 0%, #eaf1f8 45%, #f8fafc 100%);
+    color: #0f172a;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* Masquer les éléments Streamlit */
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+header {
+    visibility: visible !important;
+}
+/* Conteneur principal */
+.block-container {
+    padding-top: 1.2rem;
+    padding-left: 1.8rem;
+    padding-right: 1.8rem;
+    max-width: 100%;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #ffffff 0%, #eef4fb 100%);
+    border-right: 1px solid #cbd5e1;
+}
+
+section[data-testid="stSidebar"] * {
+    color: #0f172a !important;
+}
+
+/* Titres */
+h1, h2, h3 {
+    color: #0f172a !important;
+}
+
+/* Header */
+.header-card {
+    background: linear-gradient(135deg, #ffffff, #eef6ff);
+    border: 1px solid #cbd5e1;
+    border-radius: 22px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    box-shadow: 0 12px 28px rgba(15,23,42,0.10);
+    animation: fadeIn 0.7s ease-in-out;
+}
+
+.header-title {
+    font-size: 32px;
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.header-subtitle {
+    color: #475569;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 7px 12px;
+    margin-right: 8px;
+    color: #1e3a8a;
+    font-size: 13px;
+    margin-top: 14px;
+}
+
+.badge-live {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #166534;
+    font-weight: 800;
+    animation: pulseLive 1.5s infinite;
+}
+
+.badge-warn {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    color: #92400e;
+    font-weight: 800;
+}
+
+/* KPI cards */
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid #dbe3ef;
+    border-radius: 20px;
+    padding: 18px;
+    min-height: 130px;
+    box-shadow: 0 12px 28px rgba(15,23,42,0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    animation: slideUp 0.5s ease-in-out;
+}
+
+.kpi-card:hover {
+    transform: translateY(-4px);
+    border-color: #2563eb;
+    box-shadow: 0 14px 30px rgba(37,99,235,0.15);
+}
+
+.kpi-title {
+    color: #1e3a8a;
+    font-size: 14px;
+    margin-bottom: 11px;
+    font-weight: 700;
+}
+
+.kpi-value {
+    font-size: 35px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.kpi-sub {
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+/* Couleurs */
+.ok {
+    color: #16a34a !important;
+}
+
+.warn {
+    color: #d97706 !important;
+}
+
+.danger {
+    color: #dc2626 !important;
+}
+
+.blue {
+    color: #2563eb !important;
+}
+
+/* Véhicules */
+.vehicle-card {
+    background: #ffffff;
+    border: 1px solid #dbe3ef;
+    border-radius: 17px;
+    padding: 13px;
+    margin-bottom: 11px;
+    box-shadow: 0 8px 18px rgba(15,23,42,0.06);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.vehicle-card:hover {
+    transform: scale(1.02);
+    border-color: #2563eb;
+}
+
+.vehicle-title {
+    color: #0f172a;
+    font-weight: 850;
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.vehicle-info {
+    color: #475569;
+    font-size: 12.5px;
+    margin-top: 4px;
+}
+
+.progress-bar-bg {
+    height: 7px;
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 999px;
+    margin-top: 9px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 7px;
+    background: linear-gradient(90deg, #16a34a, #2563eb);
+    border-radius: 999px;
+    transition: width 0.8s ease-in-out;
+}
+
+/* Sidebar branding */
+.sidebar-brand {
+    font-size: 23px;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.sidebar-sub {
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 750;
+    margin-top: 4px;
+}
+
+/* Dataframes */
+div[data-testid="stDataFrame"] {
+    background: #ffffff;
+    border-radius: 16px;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    padding: 10px 16px;
+    color: #0f172a;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: #e0efff;
+    border-color: #2563eb;
+}
+
+/* Bloc horloge */
+.clock-box {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 18px rgba(15,23,42,0.06);
+}
+
+.clock-title {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.clock-time {
+    font-size: 24px;
+    color: #2563eb;
+    font-weight: 900;
+}
+
+/* Animations */
+@keyframes pulseLive {
+    0% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.45);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(22, 163, 74, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
